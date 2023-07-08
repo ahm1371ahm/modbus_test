@@ -11,10 +11,17 @@ int main()
     modbus_set_debug(_device, FALSE);
     modbus_rtu_set_rts(_device, MODBUS_RTU_RTS_UP);
 
-    modbus_set_slave(_device, 2);
+    if (modbus_connect(_device ) == -1) {
+        std::cout << "Cannot open the modbus" << std::endl;
+        return 0;
+    }
+
+    std::cout << "modbus opened successfully" << std::endl;
+
+    modbus_set_slave(_device, 3);
     modbus_write_register(_device, 2, 0x00);
 
     modbus_close(_device);
-
+    std::cout << "end of the appliation" << std::endl;
     return 0;
 }
