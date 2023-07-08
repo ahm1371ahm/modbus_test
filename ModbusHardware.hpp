@@ -15,6 +15,7 @@ public:
     void resetAll(int registerNumber) const;
     void setAll(int registerNumber) const;
 
+    uint16_t getRegister(int registerNumber) const;
     void setPin(int registerNumber, int pinNumber, bool on = true) const;
 
 private:
