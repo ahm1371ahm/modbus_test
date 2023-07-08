@@ -31,7 +31,7 @@ void setPin(int registerNumber, int pinNumber, bool on = true)
     if (on)
     {
         uint16_t modbusLastState = 0x0000;
-        modbus_read_registers(_device, 2, 1, &modbusLastState);
+        modbus_read_registers(_device, registerNumber, 1, &modbusLastState);
 
         std::cout << "Last State: " << std::hex << modbusLastState << std::endl;
 
@@ -76,6 +76,9 @@ int main()
     // }
 
     modbus_close(_device);
+    free(_device);
     std::cout << "end of the appliation" << std::endl;
     return 0;
 }
+
+// mbpoll -a 3 -b 57600 -t 3 -r 1 -c 2 /dev/serial0
