@@ -31,14 +31,14 @@ void setPin(int registerNumber, int pinNumber, bool on = true)
     if (on)
     {
         uint16_t modbusLastState = 0x0000;
-        modbus_read_registers(_device, registerNumber, 1, &modbusLastState);
+        modbus_read_registers(_device, 2, 1, &modbusLastState);
 
         std::cout << "Last State: " << std::hex << modbusLastState << std::endl;
 
-        const uint16_t singleOne = 1 << (pinNumber - 1);
-        const uint16_t value = singleOne | 0x0000;
-        std::cout << std::dec << "turning on pinNumber: " << pinNumber << std::hex << "\tvalue to be written: " << value << std::endl;
-        modbus_write_register(_device, 2, value);
+        // const uint16_t singleOne = 1 << (pinNumber - 1);
+        // const uint16_t value = singleOne | 0x0000;
+        // std::cout << std::dec << "turning on pinNumber: " << pinNumber << std::hex << "\tvalue to be written: " << value << std::endl;
+        // modbus_write_register(_device, 2, value);
     }
 }
 
@@ -58,7 +58,7 @@ int main()
     }
     std::cout << "modbus opened successfully" << std::endl;
 
-    resetAll(3);
+    // resetAll(3);
     using namespace std::chrono;
     std::this_thread::sleep_for(5s);
     setPin(3, 1);
