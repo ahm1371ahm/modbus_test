@@ -1,4 +1,6 @@
 #include <iostream>
+#include <chrono>
+#include <thread>
 
 #include "modbus.h"
 
@@ -13,13 +15,22 @@ int main()
 
     if (modbus_connect(_device ) == -1) {
         std::cout << "Cannot open the modbus" << std::endl;
-        return 0;
+        // return 0;
     }
 
     std::cout << "modbus opened successfully" << std::endl;
 
     modbus_set_slave(_device, 3);
-    modbus_write_register(_device, 2, 0x00);
+
+    uint16_t counter = 0;
+    while(true) {
+        using namespace std::chrono_literals;
+        std::cout << "writing: " << std::dec << counter << "\t" << std::hex << counter << std::endl;
+        // std::cout << std::hex << counter << std::endl;
+        modbus_write_register(_device, 2, counter);
+        counter++;
+        std::this_thread::sleep_for(1s);
+    }
 
     modbus_close(_device);
     std::cout << "end of the appliation" << std::endl;
