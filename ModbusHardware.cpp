@@ -71,7 +71,7 @@ void ModbusHardware::setPin(int registerNumber, int pinNumber, bool on) const
         std::cout << "Last State: " << std::hex << modbusLastState << std::endl;
 
         const uint16_t singleOne = 1 << (pinNumber - 1);
-        const uint16_t value = singleOne | 0x0000;
+        const uint16_t value = singleOne | modbusLastState;
         std::cout << std::dec << "turning on pinNumber: " << pinNumber << std::hex << "\tvalue to be written: " << value << std::endl;
         modbus_write_register(_device, this->_address, value);
     }
