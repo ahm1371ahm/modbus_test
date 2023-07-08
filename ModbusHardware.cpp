@@ -79,11 +79,18 @@ void ModbusHardware::setPin(int registerNumber, int pinNumber, bool on) const
     }
 
     modbus_set_slave(_device, registerNumber);
+    const uint16_t singleOne = 1 << (pinNumber - 1);
     if (on)
     {
-        const uint16_t singleOne = 1 << (pinNumber - 1);
         const uint16_t value = singleOne | this->getRegister(registerNumber);
-        std::cout << std::dec << "turning on pinNumber: " << pinNumber << std::hex << "\tvalue to be written: " << value << std::endl;
+        std::cout << std::dec << "turning on - pinNumber: " << pinNumber << std::hex << "\tvalue to be written: " << value << std::endl;
+        modbus_write_register(_device, this->_address, value);
+    }
+    else
+    {
+        const uint16_t singleZero = ~singleOne;
+        const uint16_t value = singleZero & this->getRegister(registerNumber);
+        std::cout << std::dec << "turning off - pinNumber: " << pinNumber << std::hex << "\tvalue to be written: " << value << std::endl;
         modbus_write_register(_device, this->_address, value);
     }
 }

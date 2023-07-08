@@ -5,31 +5,30 @@
 
 #include "ModbusHardware.hpp"
 
+ModbusHardware hw("/dev/serial0");
 
 int main()
 {
     std::cout << "It works" << std::endl;
 
-    ModbusHardware hw("/dev/serial0");
     hw.connect();
-    hw.resetAll(3);
+    hw.setAll(3);
     using namespace std::chrono;
     std::this_thread::sleep_for(5s);
-    hw.setPin(3, 1);
+    hw.setPin(3, 1, false);
     std::this_thread::sleep_for(5s);
-    hw.setPin(3, 5);
+    hw.setPin(3, 5, false);
     std::this_thread::sleep_for(5s);
-    hw.setPin(3, 8);
+    hw.setPin(3, 8, false);
+    std::this_thread::sleep_for(5s);
 
-    // uint16_t counter = 0;
-    // while (true)
-    // {
-    //     std::cout << "writing: " << std::dec << counter << "\t" << std::hex << counter << std::endl;
-    //     // std::cout << std::hex << counter << std::endl;
-    //     modbus_write_register(_device, 2, counter);
-    //     counter++;
-    //     std::this_thread::sleep_for(50ms);
-    // }
+    while (true)
+    {
+        hw.setPin(3, 6, false);
+        std::this_thread::sleep_for(1s);
+        hw.setPin(3, 6, true);
+        std::this_thread::sleep_for(1s);
+    }
 
     std::cout << "end of the appliation" << std::endl;
     return 0;
