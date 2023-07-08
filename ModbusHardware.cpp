@@ -12,6 +12,13 @@ ModbusHardware::ModbusHardware(const char *serialPort, int address) : _address(a
     modbus_rtu_set_rts(_device, MODBUS_RTU_RTS_UP);
 }
 
+ModbusHardware::~ModbusHardware()
+{
+    if (this->_connected) 
+        modbus_close(this->_device);
+    modbus_free(this->_device);
+}
+
 
 bool ModbusHardware::connect() const
 {
@@ -26,20 +33,31 @@ bool ModbusHardware::connect() const
 
 void ModbusHardware::resetAll(int registerNumber) const
 {
+    if (!this->_connected) {
+        this->_showNotConnectedErrorMessage();
+        return;
+    }
     modbus_set_slave(_device, registerNumber);
     modbus_write_register(_device, this->_address, 0x0000);
 }
 
 void ModbusHardware::setAll(int registerNumber) const
 {
+        if (!this->_connected) {
+        this->_showNotConnectedErrorMessage();
+        return;
+    }
     modbus_set_slave(_device, registerNumber);
     modbus_write_register(_device, this->_address, 0xFFFF);
 }
 
-void ModbusHardware::setPin(int registerNumber, int pinNumber, bool on)
+void ModbusHardware::setPin(int registerNumber, int pinNumber, bool on) const
 {
-    if (pinNumber <= 0)
-    {
+        if (!this->_connected) {
+        this->_showNotConnectedErrorMessage();
+        return;
+    }
+    if (pinNumber <= 0) {
         std::cerr << "Pin Number Must start from 1" << std::endl;
         return;
     }
@@ -57,4 +75,9 @@ void ModbusHardware::setPin(int registerNumber, int pinNumber, bool on)
         std::cout << std::dec << "turning on pinNumber: " << pinNumber << std::hex << "\tvalue to be written: " << value << std::endl;
         modbus_write_register(_device, this->_address, value);
     }
+}
+
+void ModbusHardware::_showNotConnectedErrorMessage() const 
+{
+    std::cerr << "Serial Port is not connected for the Modbus" << std::endl; 
 }

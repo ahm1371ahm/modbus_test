@@ -15,10 +15,12 @@ public:
     void resetAll(int registerNumber) const;
     void setAll(int registerNumber) const;
 
-    void setPin(int registerNumber, int pinNumber, bool on = true);
+    void setPin(int registerNumber, int pinNumber, bool on = true) const;
 
 private:
     modbus_t *_device = nullptr;
     int _address;
     mutable bool _connected;
+
+    void _showNotConnectedErrorMessage() const;
 };
