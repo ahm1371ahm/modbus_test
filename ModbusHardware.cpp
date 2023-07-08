@@ -1,5 +1,7 @@
 #include "ModbusHardware.hpp"
 
+#include "iostream"
+
 ModbusHardware::ModbusHardware(const char *serialPort, int address) : _address(address),
                                                                       _connected(false)
 {
@@ -11,7 +13,7 @@ ModbusHardware::ModbusHardware(const char *serialPort, int address) : _address(a
 }
 
 
-bool ModbusHardware::ModbusHardware::connect() const
+bool ModbusHardware::connect() const
 {
     if (this->_connected)
         return true;
@@ -20,4 +22,39 @@ bool ModbusHardware::ModbusHardware::connect() const
         return false;
     this->_connected = true;
     return true;
+}
+
+void ModbusHardware::resetAll(int registerNumber) const
+{
+    modbus_set_slave(_device, registerNumber);
+    modbus_write_register(_device, this->_address, 0x0000);
+}
+
+void ModbusHardware::setAll(int registerNumber) const
+{
+    modbus_set_slave(_device, registerNumber);
+    modbus_write_register(_device, this->_address, 0xFFFF);
+}
+
+void ModbusHardware::setPin(int registerNumber, int pinNumber, bool on)
+{
+    if (pinNumber <= 0)
+    {
+        std::cerr << "Pin Number Must start from 1" << std::endl;
+        return;
+    }
+
+    modbus_set_slave(_device, registerNumber);
+    if (on)
+    {
+        uint16_t modbusLastState = 0x0000;
+        modbus_read_registers(_device, this->_address, 1, &modbusLastState);
+
+        std::cout << "Last State: " << std::hex << modbusLastState << std::endl;
+
+        const uint16_t singleOne = 1 << (pinNumber - 1);
+        const uint16_t value = singleOne | 0x0000;
+        std::cout << std::dec << "turning on pinNumber: " << pinNumber << std::hex << "\tvalue to be written: " << value << std::endl;
+        modbus_write_register(_device, this->_address, value);
+    }
 }
