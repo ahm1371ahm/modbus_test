@@ -1,6 +1,7 @@
 #include <iostream>
 #include <chrono>
 #include <thread>
+#include <cstdint>
 
 #include "modbus.h"
 
@@ -20,6 +21,25 @@ void setAll(int registerNumber)
 
 void setPin(int registerNumber, int pinNumber, bool on = true)
 {
+    if (pinNumber <= 0)
+    {
+        std::cout << "Pin Number Must start from 1";
+        return;
+    }
+
+    modbus_set_slave(_device, registerNumber);
+    if (on)
+    {
+        uint16_t modbusLastState = 0x0000;
+        modbus_read_registers(_device, 2, 1, &modbusLastState);
+
+        std::cout << "Last State: " << std::hex << modbusLastState << std::endl;
+
+        const uint16_t singleOne = 1 << (pinNumber - 1);
+        const uint16_t value = singleOne | 0x0000;
+        std::cout << std::dec << "turning on pinNumber: " << pinNumber << std::hex << "\tvalue to be written: " << value << std::endl;
+        modbus_write_register(_device, 2, value);
+    }
 }
 
 int main()
@@ -39,9 +59,11 @@ int main()
     std::cout << "modbus opened successfully" << std::endl;
 
     resetAll(3);
-        using namespace std::chrono_literals;
+    using namespace std::chrono;
     std::this_thread::sleep_for(5s);
-    setAll(3);
+    setPin(3, 1);
+    std::this_thread::sleep_for(5s);
+    setPin(3, 5);
 
     // uint16_t counter = 0;
     // while (true)
