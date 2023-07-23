@@ -12,10 +12,10 @@ int main()
     std::cout << "It works" << std::endl;
 
     hw.connect();
-    hw.setAll(3);
+    hw.resetAll(3);
     using namespace std::chrono;
     std::this_thread::sleep_for(5s);
-    hw.setPin(3, 1, false);
+    hw.setPin(3, 2, true);
     std::this_thread::sleep_for(5s);
     hw.setPin(3, 5, false);
     std::this_thread::sleep_for(5s);
@@ -25,8 +25,10 @@ int main()
     while (true)
     {
         hw.setPin(3, 6, false);
+        hw.setPin(3, 7, true);
         std::this_thread::sleep_for(1s);
         hw.setPin(3, 6, true);
+        hw.setPin(3, 7, false);
         std::this_thread::sleep_for(1s);
     }
 
